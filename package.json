@@ -1,0 +1,31 @@
+{
+  "name": "anim8",
+  "version": "1.0.0",
+  "description": "Animate aircraft tracks.",
+  "main": "index.js",
+  "directories": {
+    "doc": "doc",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wiseman/orbital-detector.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wiseman/orbital-detector/issues"
+  },
+  "homepage": "https://github.com/wiseman/orbital-detector#readme",
+  "dependencies": {
+    "canvas": "1.2.7",
+    "csv-parse": "1.0.0",
+    "geodesy": "1.0.2",
+    "leftpad": "0.0.0",
+    "moment": "2.10.6",
+    "progress": "1.1.8"
+  }
+}

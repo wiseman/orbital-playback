@@ -4,11 +4,24 @@ var fs = require('fs');
 var geo = require('geodesy');
 var leftpad = require('leftpad');
 var moment = require('moment');
+var path = require('path');
 var ProgressBar = require('progress');
+var Track = require('./lib/track');
+var argv = require('yargs')
+      .usage('Usage: $0 [options] <input CSV>')
+      .help('help')
+      .demand(1, 1, 'Must specify input CSV file')
+      .default('session-timeout', 300)
+      .describe('session-timeout', 'Max seconds between pings')
+      .default('output-path', 'frames')
+      .describe('output-path', 'Directory for output frames')
+      .strict()
+      .argv;
+
 
 var positions = [];
 var tracks = [];
-var input = fs.createReadStream('N520PD.csv');
+var input = fs.createReadStream(argv._[0]);
 var parser = csvParser();
 
 
@@ -20,14 +33,14 @@ function parseRecord(record) {
   };
 }
 
-function partitionTracks(positions) {
+function partitionTracks(positions, timeout) {
   var tracks = [];
   var track = undefined;
   var lastTime = undefined;
   for (i = 0; i < positions.length; i++) {
-    if (!lastTime || positions[i].time.diff(lastTime, 'seconds') > 300) {
+    if (!lastTime || positions[i].time.diff(lastTime, 'seconds') > timeout) {
       if (track) {
-        tracks.push(track);
+        tracks.push(new Track(track));
       }
       track = [];
     }
@@ -35,7 +48,7 @@ function partitionTracks(positions) {
     lastTime = positions[i].time;
   }
   if (track) {
-    tracks.push(track);
+    tracks.push(new Track(track));
   }
   return tracks;
 }
@@ -101,7 +114,7 @@ function render(tracks) {
     for (var i = 0; i < tracks.length; i++) {
       var track = tracks[i];
       var color = colors[i % colors.length];
-      var pos = track[frame % track.length];
+      var pos = track.positionAtTimeOffsetWrap(frame);
       var loc = new geo.LatLonEllipsoidal(pos.lat, pos.lon);
       var dist = centerLoc.distanceTo(loc);
       var bearing = centerLoc.initialBearingTo(loc).toRadians() + 180;
@@ -125,7 +138,7 @@ function render(tracks) {
       }
     }
     fs.writeFileSync(
-      'frames/' + leftpad(frame, 5) + '.png',
+      path.join(argv.outputPath, leftpad(frame, 5) + '.png'),
       canvas.toBuffer());
   }
 }
@@ -143,14 +156,13 @@ parser.on('readable', function() {
 });
 
 parser.on('finish', function() {
-  tracks = partitionTracks(positions);
+  tracks = partitionTracks(positions, argv.sessionTimeout);
   console.log(tracks.length + ' tracks found.');
   var longTracks = tracks.filter(function(track) {
-    return track.length > 1 && trackTime(track) > 20 * 60;
+    return track.duration() > 20 * 60;
   });
   console.log(longTracks.length + ' long tracks found.');
-  times = longTracks.map(function(t) { return trackTime(t); });
-  console.log(times.sort()[times.length - 1]);
+  //console.log(longTracks.map(function(t) { return t.duration(); }).sort()[longTracks.length - 1]);
   render(longTracks);
 });
 

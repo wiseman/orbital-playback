@@ -48,5 +48,5 @@ Or `mogrify` and `gifsicle` to make an animated gif:
 
 ```
 $ echo frames/*.png | time xargs -t -n 1 -P 6 -I {} sh -c "mogrify -format gif -geometry 480x270 -path frames-gif/ {}"
-gifsicle --colors 256 -d3 --loop frames-gif/*.gif > animated.gif
+$ gifsicle --colors 256 -d3 --loop frames-gif/*.gif > animated.gif
 ```

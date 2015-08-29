@@ -67,12 +67,6 @@ function partitionTracks(positions, timeout) {
   return tracks;
 }
 
-function trackTime(track) {
-  return track[track.length - 1].time.diff(
-    track[0].time,
-    'seconds');
-}
-
 var colors = [
   '#66ccff',
   '#66ffff',

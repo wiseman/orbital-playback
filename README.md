@@ -14,6 +14,11 @@ The input CSV should look something like this:
 2015-03-03 13:12:12-08,34.17824,-118.2931
 ```
 
+The program will partition the positions into "sessions" or tracks, by
+looking for gaps of >= 300 seconds between position reports. Each
+track will then be animated simultaneously.
+
+
 Usage:
 
 ```
@@ -42,6 +47,6 @@ $ ffmpeg -i frames/%5d.png -c:v libx264 -r 30 -pix_fmt yuv420p N520PD.mp4
 Or `mogrify` and `gifsicle` to make an animated gif:
 
 ```
-$ echo frames/008??.png | time xargs -t -n 1 -P 6 -I {} sh -c "mogrify -format gif -geometry 480x270 -path frames-gif/ {}"
+$ echo frames/*.png | time xargs -t -n 1 -P 6 -I {} sh -c "mogrify -format gif -geometry 480x270 -path frames-gif/ {}"
 gifsicle --colors 256 -d3 --loop frames-gif/*.gif > animated.gif
 ```

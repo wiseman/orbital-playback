@@ -15,6 +15,20 @@ var argv = require('yargs')
       .describe('session-timeout', 'Max seconds between pings')
       .default('output-path', 'frames')
       .describe('output-path', 'Directory for output frames')
+      .default('num-secs', 5000)
+      .describe('num-secs', 'Number of seconds of flights to render')
+      .default('strobe-period', 20)
+      .describe('strobe-period', 'Seconds between strobes')
+      .default('lat', 34.156149756733)
+      .describe('lat', 'Center latitude')
+      .default('lon', -118.222884689317)
+      .describe('lon', 'Center longitude')
+      .default('meters-per-pixel', 20000 / 1920.0)
+      .describe('meters-per-pixel', 'Map scale')
+      .default('width', 1920)
+      .describe('width', 'Frame width in pixels')
+      .default('height', 1080)
+      .describe('height', 'Frame height in pixels')
       .strict()
       .argv;
 
@@ -90,15 +104,13 @@ var colors = [
 ];
 
 function render(tracks) {
-  // var centerLoc = new geo.LatLonEllipsoidal(34.1334732, -118.1925192);
-  var centerLoc = new geo.LatLonEllipsoidal(34.156149756733,
-                                            -118.222884689317);
+  var centerLoc = new geo.LatLonEllipsoidal(argv.lat, argv.lon);
   var width = 1920;
   var height = 1080;
-  var metersPerPix = 20000.0 / 1920.0;
-  var canvas = new Canvas(1920, 1080);
+  var metersPerPix = argv.metersPerPixel;
+  var canvas = new Canvas(argv.width, argv.height);
   var ctx = canvas.getContext('2d');
-  var numFrames = 5916;
+  var numFrames = argv.numSecs;
 
   var bar = new ProgressBar('Rendering [:bar] :percent :elapsed of :etas', {
     complete: '=',
@@ -120,9 +132,9 @@ function render(tracks) {
       var bearing = centerLoc.initialBearingTo(loc).toRadians() + 180;
       var x = width / 2 + dist * Math.cos(bearing) / metersPerPix;
       var y = height / 2 + dist * Math.sin(bearing) / metersPerPix;
-      var ping = ((frame + i) % 20) == 0;
+      var strobe = ((frame + i) % argv.strobePeriod) == 0;
       ctx.fillStyle = color;
-      if (ping) {
+      if (strobe) {
         ctx.beginPath();
         ctx.fillStyle = '#fff';
         ctx.arc(x, y, 8, 0, 2 * Math.PI);

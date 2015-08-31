@@ -1,0 +1,1 @@
+web: java $JVM_OPTS -cp target/orbital-playback.jar clojure.main -m orbital-playback.server

@@ -8,18 +8,19 @@
 
   :test-paths ["test/clj"]
 
-  :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/clojurescript "1.7.122"]
-                 ;;[org.clojure/clojurescript "0.0-3058" :scope "provided"]
+  :dependencies [;; From Chestnut.
+                 [org.clojure/clojure "1.7.0"]
+                 [org.clojure/clojurescript "0.0-3058" :scope "provided"]
                  [ring "1.4.0"]
                  [ring/ring-defaults "0.1.5"]
                  [compojure "1.4.0"]
                  [enlive "1.1.6"]
-                 [org.omcljs/om "0.9.0"]
+                 [org.omcljs/om "0.8.8"]
                  [environ "1.0.0"]
+
                  [royrutto/leaflet-cljs "0.7.3"]]
 
-  :plugins [[lein-cljsbuild "1.1.0"]
+  :plugins [[lein-cljsbuild "1.0.5"]
             [lein-environ "1.0.0"]]
 
   :min-lein-version "2.5.0"
@@ -31,7 +32,7 @@
                                         :output-dir    "resources/public/js/out"
                                         :source-map    "resources/public/js/out.js.map"
                                         :preamble      ["react/react.min.js"]
-                                        :optimizations :advanced
+                                        :optimizations :none
                                         :pretty-print  true}}}}
 
   :profiles {:dev {:source-paths ["env/dev/clj"]
@@ -43,8 +44,7 @@
                                   [weasel "0.6.0"]]
 
                    :repl-options {:init-ns orbital-playback.server
-                                  ;;:nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]
-                                  }
+                                  :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}
 
                    :plugins [[lein-figwheel "0.2.5"]]
 

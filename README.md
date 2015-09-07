@@ -18,6 +18,11 @@ The program will partition the positions into "sessions" or tracks, by
 looking for gaps of >= 300 seconds between position reports. Each
 track will then be animated simultaneously.
 
+Time compression is in effect: each frame represents 1 second, so 30
+fps = 30x speedup over realtime.
+
+Position will be interpolated if a position report is missing.
+
 
 Usage:
 
